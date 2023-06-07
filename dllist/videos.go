@@ -49,11 +49,10 @@ type PopularVideosTable struct {
 func (l *List) MakeVideoTable() {
 	l.Header.VideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
+	rows, err := pool.QueryContext(ctx, constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	index := 1
-	defer rows.Close()
 	for rows.Next() {
 		var id int
 		var queriedTitle string
@@ -98,10 +97,9 @@ func (l *List) MakeVideoTable() {
 func (l *List) MakeNewVideoTable() {
 	l.Header.NewVideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
+	rows, err := pool.QueryContext(ctx, constants.GetVideoQueryString(l.language))
 	checkError(err)
 
-	defer rows.Close()
 	for rows.Next() {
 		var id int
 		var queriedTitle string
@@ -133,10 +131,9 @@ func (l *List) MakeNewVideoTable() {
 func (l *List) MakePopularVideoTable() {
 	l.Header.PopularVideoTableOffset = l.GetCurrentSize()
 
-	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
+	rows, err := pool.QueryContext(ctx, constants.GetVideoQueryString(l.language))
 	checkError(err)
 
-	defer rows.Close()
 	for rows.Next() {
 		var id int
 		var queriedTitle string

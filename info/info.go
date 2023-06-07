@@ -4,6 +4,7 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"bytes"
+	"context"
 	"encoding/binary"
 	"database/sql"
 	"fmt"
@@ -145,8 +146,8 @@ func (i *Info) GetCurrentSize(_buffer *bytes.Buffer) uint32 {
 	return uint32(buffer.Len())
 }
 
-func GetTimePlayed(pool *sql.DB) {
-	rows, err := pool.Query(`SELECT game_id, COUNT(game_id), SUM(times_played), SUM(time_played) FROM time_played GROUP BY game_id`)
+func GetTimePlayed(ctx context.Context, pool *sql.DB) {
+	rows, err := pool.QueryContext(ctx, `SELECT game_id, COUNT(game_id), SUM(times_played), SUM(time_played) FROM time_played GROUP BY game_id`)
 	checkError(err)
 
 	for rows.Next() {

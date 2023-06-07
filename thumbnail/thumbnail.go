@@ -46,7 +46,6 @@ func WriteThumbnail() {
 	}
 
 	// Ensure this Postgresql connection is valid.
-	defer pool.Close()
 
 	rows, err := pool.Query(constants.GetVideoQueryString(constants.English))
 	checkError(err)

@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"golang.org/x/image/draw"
 	"image"
+	"image/color"
 	"image/jpeg"
 	"image/png"
 	"net/http"
+	"github.com/disintegration/imaging"
 )
 
 var regionToStr = map[constants.Region]string{
@@ -55,17 +57,45 @@ func (i *Info) WriteCoverArt(buffer *bytes.Buffer, titleType constants.TitleType
 	if resp.StatusCode != http.StatusOK {
 		buffer.Write(consoleToTempImageType[titleType])
 	} else {
-		img, err := png.Decode(resp.Body)
+		coverImg, err := png.Decode(resp.Body)
 		checkError(err)
 
+		coverImgBounds := coverImg.Bounds()
+		coverImgWidth, coverImgHeight := coverImgBounds.Dx(), coverImgBounds.Dy()
+
+		var coverImgResized image.Image
+		if titleTypeToStr[titleType] != "3DS" && titleTypeToStr[titleType] != "NDS" {
+			coverImgResized = resizeImage(coverImg, int(float64(coverImgWidth)*(384.0/float64(coverImgHeight))), 384)
+		} else {
+			coverImgResized = resizeImage(coverImg, 384, int(float64(coverImgHeight)*(384.0/float64(coverImgWidth))))
+		}
+
+		coverImgResizedBounds := coverImgResized.Bounds()
+		coverImgResizedWidth, coverImgResizedHeight := coverImgResizedBounds.Dx(), coverImgResizedBounds.Dy()
+
+		offsetX := (384 - coverImgResizedWidth) / 2
+		offsetY := (384 - coverImgResizedHeight) / 2
+		offset := image.Pt(offsetX, offsetY)
+
 		newImage := image.NewRGBA(image.Rect(0, 0, 384, 384))
-		draw.BiLinear.Scale(newImage, newImage.Bounds(), img, img.Bounds(), draw.Over, nil)
+		drawImage(newImage, coverImgResized, offset)
 
 		err = jpeg.Encode(buffer, newImage, nil)
 		checkError(err)
 	}
 
 	i.Header.PictureSize = uint32(buffer.Len())
+}
+
+func resizeImage(img image.Image, width, height int) image.Image {
+	resizedImg := imaging.Resize(img, width, height, imaging.Lanczos)
+
+	return resizedImg
+}
+
+func drawImage(dst draw.Image, src image.Image, offset image.Point) {
+	draw.Draw(dst, dst.Bounds(), &image.Uniform{C: color.RGBA{255, 255, 255, 255}}, image.Point{}, draw.Src)
+	draw.Draw(dst, src.Bounds().Add(offset), src, image.Point{}, draw.Src)
 }
 
 func (i *Info) WriteRatingImage(buffer *bytes.Buffer, region constants.Region) {

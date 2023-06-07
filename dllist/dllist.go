@@ -6,6 +6,7 @@ import (
 	"NintendoChannel/info"
 	"database/sql"
 	"bytes"
+	"context"
 	"encoding/binary"
 	"fmt"
 	"github.com/wii-tools/lzx/lz10"
@@ -53,6 +54,7 @@ func checkError(err error) {
 }
 
 var pool *sql.DB
+var ctx = context.Background()
 
 func MakeDownloadList() {
 	// Initialize database
@@ -62,9 +64,8 @@ func MakeDownloadList() {
 	}
 
 	// Ensure this Postgresql connection is valid.
-	defer pool.Close()
 	gametdb.PrepareGameTDB()
-	info.GetTimePlayed(pool)
+	info.GetTimePlayed(ctx, pool)
 
 	wg := sync.WaitGroup{}
 	runtime.GOMAXPROCS(runtime.NumCPU())

@@ -2,6 +2,8 @@ package dllist
 
 import (
 	"NintendoChannel/constants"
+	"database/sql"
+	"fmt"
 )
 
 type RecentRecommendationTable struct {
@@ -13,10 +15,16 @@ type RecentRecommendationTable struct {
 const QueryRecommendations = `SELECT COUNT(game_id), game_id FROM recommendations GROUP BY game_id`
 
 func (l *List) QueryRecommendations() {
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	if err != nil {
+		panic(err)
+	}
+
 	rows, err := pool.Query(QueryRecommendations)
 	checkError(err)
 
-	defer rows.Close()
+	print(rows)
+
 	for rows.Next() {
 		var gameID string
 		var count int
