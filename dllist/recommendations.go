@@ -23,8 +23,6 @@ func (l *List) QueryRecommendations() {
 	rows, err := pool.Query(QueryRecommendations)
 	checkError(err)
 
-	print(rows)
-
 	for rows.Next() {
 		var gameID string
 		var count int

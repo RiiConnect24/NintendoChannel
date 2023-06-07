@@ -177,7 +177,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			var releaseMonth uint8 = 0xFF
 			if game.ReleaseDate.Month != "" {
-				temp, _ := strconv.ParseUint(game.ReleaseDate.Month, 10, 32)
+				temp, _ := strconv.ParseUint(game.ReleaseDate.Month - 1, 10, 32)
 				releaseMonth = uint8(temp)
 			}
 

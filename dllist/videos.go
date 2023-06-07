@@ -2,8 +2,9 @@ package dllist
 
 import (
 	"NintendoChannel/constants"
-	"time"
 	"unicode/utf16"
+	"database/sql"
+	"fmt"
 )
 
 type VideoTable struct {
@@ -48,8 +49,13 @@ type PopularVideosTable struct {
 
 func (l *List) MakeVideoTable() {
 	l.Header.VideoTableOffset = l.GetCurrentSize()
+	
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	if err != nil {
+		panic(err)
+	}
 
-	rows, err := pool.QueryContext(ctx, constants.GetVideoQueryString(l.language))
+	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	index := 1
@@ -58,21 +64,13 @@ func (l *List) MakeVideoTable() {
 		var queriedTitle string
 		var length int
 		var videoType int
-		var dateAdded time.Time
 
-		err = rows.Scan(&id, &queriedTitle, &length, &videoType, &dateAdded)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
 		checkError(err)
 
 		var title [123]uint16
 		tempTitle := utf16.Encode([]rune(queriedTitle))
 		copy(title[:], tempTitle)
-
-		// A new video is one that is less than 5 days old
-		fiveDaysAfterAdded := dateAdded.AddDate(0, 0, 5)
-		isNew := 0
-		if time.Now().Before(fiveDaysAfterAdded) {
-			isNew = 1
-		}
 
 		l.VideoTable = append(l.VideoTable, VideoTable{
 			ID:          uint32(id),
@@ -83,7 +81,7 @@ func (l *List) MakeVideoTable() {
 			Unknown2:    0,
 			RatingID:    9,
 			Unknown3:    1,
-			IsNew:       uint8(isNew),
+			IsNew:       0,
 			VideoIndex:  uint8(index),
 			Unknown4:    [2]byte{222, 222},
 			Title:       title,
@@ -96,8 +94,13 @@ func (l *List) MakeVideoTable() {
 
 func (l *List) MakeNewVideoTable() {
 	l.Header.NewVideoTableOffset = l.GetCurrentSize()
+	
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	if err != nil {
+		panic(err)
+	}
 
-	rows, err := pool.QueryContext(ctx, constants.GetVideoQueryString(l.language))
+	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	for rows.Next() {
@@ -106,7 +109,7 @@ func (l *List) MakeNewVideoTable() {
 		var length int
 		var videoType int
 
-		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
 		checkError(err)
 
 		var title [102]uint16
@@ -130,8 +133,13 @@ func (l *List) MakeNewVideoTable() {
 
 func (l *List) MakePopularVideoTable() {
 	l.Header.PopularVideoTableOffset = l.GetCurrentSize()
+	
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	if err != nil {
+		panic(err)
+	}
 
-	rows, err := pool.QueryContext(ctx, constants.GetVideoQueryString(l.language))
+	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
 	checkError(err)
 
 	for rows.Next() {
@@ -140,7 +148,7 @@ func (l *List) MakePopularVideoTable() {
 		var length int
 		var videoType int
 
-		err = rows.Scan(&id, &queriedTitle, &length, &videoType, nil)
+		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
 		checkError(err)
 
 		var title [102]uint16
