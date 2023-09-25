@@ -232,22 +232,45 @@ const (
 	Platinum
 )
 
+func GetPopularVideoQueryString(language Language) string {
+	switch language {
+	case Japanese:
+		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY RAND() DESC`
+	case English:
+		return `SELECT id, name_english, length, video_type FROM videos ORDER BY RAND() DESC`
+	case German:
+		return `SELECT id, name_german, length, video_type FROM videos ORDER BY RAND() DESC`
+	case French:
+		return `SELECT id, name_french, length, video_type FROM videos ORDER BY RAND() DESC`
+	case Spanish:
+		return `SELECT id, name_spanish, length, video_type FROM videos ORDER BY RAND() DESC`
+	case Italian:
+		return `SELECT id, name_italian, length, video_type FROM videos ORDER BY RAND() DESC`
+	case Dutch:
+		return `SELECT id, name_dutch, length, video_type FROM videos ORDER BY RAND() DESC`
+	default:
+		// Will never reach here
+		return ""
+	}
+}
+
+
 func GetVideoQueryString(language Language) string {
 	switch language {
 	case Japanese:
-		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_japanese, length, video_type FROM videos ORDER BY date_added DESC`
 	case English:
-		return `SELECT id, name_english, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_english, length, video_type FROM videos ORDER BY date_added DESC`
 	case German:
-		return `SELECT id, name_german, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_german, length, video_type FROM videos ORDER BY date_added DESC`
 	case French:
-		return `SELECT id, name_french, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_french, length, video_type FROM videos ORDER BY date_added DESC`
 	case Spanish:
-		return `SELECT id, name_spanish, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_spanish, length, video_type FROM videos ORDER BY date_added DESC`
 	case Italian:
-		return `SELECT id, name_italian, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_italian, length, video_type FROM videos ORDER BY date_added DESC`
 	case Dutch:
-		return `SELECT id, name_dutch, length, video_type FROM videos ORDER BY id DESC`
+		return `SELECT id, name_dutch, length, video_type FROM videos ORDER BY date_added DESC`
 	default:
 		// Will never reach here
 		return ""

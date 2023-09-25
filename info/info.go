@@ -14,6 +14,7 @@ import (
 	"os"
 	"strings"
 	"unicode/utf16"
+	"unicode"
 )
 
 type Info struct {
@@ -43,10 +44,10 @@ type Info struct {
 var timePlayed = map[string]TimePlayed{}
 
 func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType) {
-	if (title != "Mario Kart Wii") {
+	if !strings.Contains(title, "Animal Crossing") {
 		return
 	}
-	
+
 	// Make other fields
 	i.GetSupportedControllers(&game.Controllers)
 	i.GetSupportedFeatures(&game.Features)
@@ -80,7 +81,7 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	}
 
 	// Make synopsis
-	wrappedSynopsis := strings.Split(wordwrap.WrapString(synopsis, 40), "\n")
+	wrappedSynopsis := strings.Split(wordwrap.WrapString(strings.Replace(strings.Replace(synopsis, "\n", "", -1), "  ", " ", -1), 40), "\n")
 	if len(wrappedSynopsis) <= 3 {
 		for i2, s := range wrappedSynopsis {
 			copy(i.DescriptionText[i2][:], utf16.Encode([]rune(s)))
@@ -102,6 +103,28 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 		temp := []uint16{0, 0}
 		copy(i.PlayersText[:], append(temp, utf16.Encode([]rune(fmt.Sprintf("%d Players (Online)", game.Features.OnlinePlayers)))...))
 	}
+
+	var temp_ []uint16 // Declare a slice to store UTF-16 encoded values
+
+	for _, s := range strings.Split(game.Genre, ",") {
+		convertedString := s // Since s is already a string, no need to convert
+		capitalized := capitalizeString(convertedString)
+
+		// Append the utf16 encoded value of capitalized to temp_
+		encoded := utf16.Encode([]rune(capitalized))
+		temp_ = append(temp_, encoded...)
+
+		// Append utf16 encoded value of ", " to temp_ if it's not the last entry
+		commaSpace := utf16.Encode([]rune(", "))
+		temp_ = append(temp_, commaSpace...)
+	}
+
+	temp_ = temp_[:len(temp_)-2]
+
+	var genreText []uint16
+	genreText = append(genreText, temp_...)
+
+	copy(i.GenreText[:], genreText)
 
 	copy(i.DisclaimerText[:], utf16.Encode([]rune("Game information is provided by GameTDB.")))
 
@@ -126,8 +149,24 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	i.Header.CRC32 = checksum
 	temp.Reset()
 
+	var reg [3]string
+	reg[0] = "JP"
+	reg[1] = "GB"
+	reg[2] = "US"
+
+	var lang [7]string
+	lang[0] = "ja"
+	lang[1] = "en"
+	lang[2] = "de"
+	lang[3] = "fr"
+	lang[4] = "es"
+	lang[5] = "it"
+	lang[6] = "nl"
+
+	err := os.MkdirAll(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/soft/%s/%s/", reg[region], lang[language]), os.ModePerm)
+
 	i.WriteAll(temp, imageBuffer)
-	err := os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, fileID), temp.Bytes(), 0666)
+	err = os.WriteFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/soft/%s/%s/%d.info", reg[region], lang[language], fileID), temp.Bytes(), 0666)
 	checkError(err)
 }
 
@@ -150,8 +189,23 @@ func (i *Info) GetCurrentSize(_buffer *bytes.Buffer) uint32 {
 	return uint32(buffer.Len())
 }
 
+func capitalizeString(input string) string {
+	words := strings.Fields(input) // Split the input into words
+	var capitalizedWords []string
+
+	for _, word := range words {
+		if len(word) > 0 {
+			// Capitalize the first letter of the word
+			capitalizedWord := string(unicode.ToUpper(rune(word[0]))) + strings.ToLower(word[1:])
+			capitalizedWords = append(capitalizedWords, capitalizedWord)
+		}
+	}
+
+	return strings.Join(capitalizedWords, " ")
+}
+
 func GetTimePlayed(ctx context.Context, pool *sql.DB) {
-	rows, err := pool.QueryContext(ctx, `SELECT game_id, COUNT(game_id), SUM(times_played), SUM(time_played) FROM time_played GROUP BY game_id`)
+	rows, err := pool.Query(`SELECT game_id, COUNT(game_id), SUM(times_played), SUM(time_played) FROM time_played GROUP BY game_id`)
 	checkError(err)
 
 	for rows.Next() {
@@ -163,15 +217,11 @@ func GetTimePlayed(ctx context.Context, pool *sql.DB) {
 		err = rows.Scan(&gameID, &numberOfPlayers, &totalTimesPlayed, &totalTimePlayed)
 		checkError(err)
 
-		if gameID == "RMCE" {
-			fmt.Println(totalTimesPlayed, totalTimePlayed, numberOfPlayers)
-		}
-
 		timePlayed[gameID] = TimePlayed{
 			TotalTimePlayed:           uint32(totalTimePlayed / 60),
 			TimeSpentPlayingPerPerson: uint32(totalTimePlayed / numberOfPlayers),
 			TotalTimesPlayed:          uint32(totalTimesPlayed),
 			TimesPlayedPerPerson:      uint32((float64(totalTimesPlayed / numberOfPlayers)) / 0.01),
 		}
-	}
+	} 
 }

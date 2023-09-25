@@ -91,7 +91,7 @@ func PrepareGameTDB() {
 		req, err := http.NewRequest("GET", fmt.Sprintf("https://www.gametdb.com/%s.zip", name), nil)
 		checkError(err)
 
-		req.Header.Set("User-Agent", "WiiLink Nintendo Channel File Generator/0.1")
+		req.Header.Set("User-Agent", "RiiConnect24 Nintendo Channel File Generator/0.1")
 
 		response, err := client.Do(req)
 		checkError(err)

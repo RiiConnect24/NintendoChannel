@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf16"
+	"sort"
 )
 
 // CompanyTable represents a company in the dllist.bin
@@ -131,6 +132,12 @@ func (l *List) MakeTitleTable() {
 }
 
 func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType constants.TitleType) {
+    customSort := func(i, j int) bool {
+        return (*games)[i].Locale[0].Title < (*games)[j].Locale[0].Title
+    }
+
+    sort.Slice(*games, customSort)
+
 	for _, game := range *games {
 		if game.Region == regionToGameTDB[l.region] || game.Region == "ALL" {
 			titleType := defaultTitleType
@@ -153,7 +160,11 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				}
 			}
 
-			// We will not include mods or Gamecube games
+			if titleType == constants.ThreeDSDownload {
+				continue
+			}
+
+			// We will not include mods or GameCube games
 			if game.Type == "CUSTOM" || game.Type == "GameCube" || game.Type == "Homebrew" {
 				continue
 			}
@@ -177,7 +188,9 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			var releaseMonth uint8 = 0xFF
 			if game.ReleaseDate.Month != "" {
-				temp, _ := strconv.ParseUint(game.ReleaseDate.Month - 1, 10, 32)
+				month, _ := strconv.Atoi(game.ReleaseDate.Month)
+				month_ := strconv.Itoa(month - 1)
+				temp, _ := strconv.ParseUint(month_, 10, 32)
 				releaseMonth = uint8(temp)
 			}
 
@@ -351,7 +364,7 @@ func (l *List) MakeNewTitleTable() {
 	// TODO: Figure out a way to get the newest titles
 	l.Header.NewTitleTableOffset = l.GetCurrentSize()
 	l.NewTitleTable = append(l.NewTitleTable, l.Header.TitleTableOffset)
-	l.Header.NumberOfNewTitleTables = 1
+	l.Header.NumberOfNewTitleTables = 0
 }
 
 func GetMedal(numberOfTimesVotes int) constants.Medal {

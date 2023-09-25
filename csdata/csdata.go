@@ -7,7 +7,7 @@ import (
 	"github.com/wii-tools/lzx/lz10"
 	"hash/crc32"
 	"os"
-	"unicode/utf16"
+	// "unicode/utf16"
 )
 
 type Header struct {
@@ -58,7 +58,7 @@ func CreateCSData() {
 		Unknown2:           222,
 	}
 
-	var pics [][]byte
+	/*var pics [][]byte
 	pic1, err := os.ReadFile("pic1.tpl")
 	if err != nil {
 		panic(err)
@@ -96,21 +96,21 @@ func CreateCSData() {
 			PictureSize:   uint32(len(pics[i])),
 			PictureOffset: offset,
 		}
-	}
+	}*/
 
 	buffer := new(bytes.Buffer)
 
 	binary.Write(buffer, binary.BigEndian, header)
-	binary.Write(buffer, binary.BigEndian, pics[0])
+	/*binary.Write(buffer, binary.BigEndian, pics[0])
 	binary.Write(buffer, binary.BigEndian, pics[1])
-	binary.Write(buffer, binary.BigEndian, pics[2])
+	binary.Write(buffer, binary.BigEndian, pics[2])*/
 	header.Filesize = uint32(buffer.Len())
 	buffer.Reset()
 
 	binary.Write(buffer, binary.BigEndian, header)
-	binary.Write(buffer, binary.BigEndian, pics[0])
+	/*binary.Write(buffer, binary.BigEndian, pics[0])
 	binary.Write(buffer, binary.BigEndian, pics[1])
-	binary.Write(buffer, binary.BigEndian, pics[2])
+	binary.Write(buffer, binary.BigEndian, pics[2])*/
 
 	// Calculate crc32
 	crcTable := crc32.MakeTable(crc32.IEEE)
@@ -119,9 +119,9 @@ func CreateCSData() {
 	buffer.Reset()
 
 	binary.Write(buffer, binary.BigEndian, header)
-	binary.Write(buffer, binary.BigEndian, pics[0])
+	/*binary.Write(buffer, binary.BigEndian, pics[0])
 	binary.Write(buffer, binary.BigEndian, pics[1])
-	binary.Write(buffer, binary.BigEndian, pics[2])
+	binary.Write(buffer, binary.BigEndian, pics[2])*/
 
 	compress, err := lz10.Compress(buffer.Bytes())
 
@@ -131,7 +131,9 @@ func CreateCSData() {
 		panic(err)
 	}
 
-	err = os.WriteFile("csdata.bin", encrypted, 0666)
+	err = os.MkdirAll("./dir/6/US/en/", os.ModePerm)
+
+	err = os.WriteFile("./dir/6/US/en/csdata.bn", encrypted, 0666)
 	if err != nil {
 		panic(err)
 	}

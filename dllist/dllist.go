@@ -14,12 +14,7 @@ import (
 	"io"
 	"log"
 	"os"
-<<<<<<< HEAD
-	"runtime"
-	"sync"
-=======
 	_ "github.com/go-sql-driver/mysql"
->>>>>>> 7e92459 (Convert queries of Postgresql to MySQL)
 )
 
 type List struct {
@@ -55,6 +50,92 @@ func checkError(err error) {
 
 var pool *sql.DB
 var ctx = context.Background()
+
+type WorkerCtx struct {
+	region   constants.RegionMeta
+	language constants.Language
+}
+
+func Worker(worker <-chan WorkerCtx, b chan<- int) {
+	for w := range worker {
+		var reg [3]string
+		reg[0] = "JP"
+		reg[1] = "GB"
+		reg[2] = "US"
+
+		var lang [7]string
+		lang[0] = "ja"
+		lang[1] = "en"
+		lang[2] = "de"
+		lang[3] = "fr"
+		lang[4] = "es"
+		lang[5] = "it"
+		lang[6] = "nl"
+
+		fmt.Printf("Starting worker - Region: %s, Language: %s\n", reg[w.region.Region], lang[w.language])
+		list := List{
+			region:          w.region.Region,
+			ratingGroup:     w.region.RatingGroup,
+			language:        w.language,
+			imageBuffer:     new(bytes.Buffer),
+			recommendations: map[string]int{},
+		}
+
+		list.QueryRecommendations()
+
+		list.MakeHeader()
+		list.MakeRatingsTable()
+		list.MakeTitleTypeTable()
+		list.MakeCompaniesTable()
+		list.MakeTitleTable()
+		list.MakeNewTitleTable()
+		list.MakeVideoTable()
+		list.MakeNewVideoTable()
+		list.MakeDemoTable()
+		list.MakeRecommendationTable()
+		list.MakeRecentRecommendationTable()
+		list.MakePopularVideoTable()
+		list.MakeDetailedRatingTable()
+		list.WriteRatingImages()
+
+		temp := bytes.NewBuffer(nil)
+		list.WriteAll(temp)
+		list.Header.Filesize = uint32(temp.Len())
+		temp.Reset()
+		list.WriteAll(temp)
+
+		crcTable := crc32.MakeTable(crc32.IEEE)
+		checksum := crc32.Checksum(temp.Bytes(), crcTable)
+		list.Header.CRC32 = checksum
+
+		temp.Reset()
+		list.WriteAll(temp)
+
+		// Compress then write
+		compressed, err := lz10.Compress(temp.Bytes())
+		checkError(err)
+
+		err = os.MkdirAll(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/list/%s/%s/", reg[w.region.Region], lang[w.language]), os.ModePerm)
+
+		err = os.WriteFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/list/%s/%s/434968891.LZ", reg[w.region.Region], lang[w.language]), compressed, os.ModePerm)
+		checkError(err)
+		fmt.Printf("Finished worker - Region: %s, Language: %s\n", reg[w.region.Region], lang[w.language])
+		b <- 1
+	}
+}
+
+func SpawnWorker(number int, contexts chan WorkerCtx, results chan int) {
+	for i := 0; i < number; i++ {
+		go Worker(contexts, results)
+	}
+}
+
+func ResolveWorkers(number int, contexts chan WorkerCtx, results chan int) {
+	for i := 0; i < number; i++ {
+		<-results
+		SpawnWorker(1, contexts, results)
+	}
+}
 
 func MakeDownloadList() {
 	// Initialize database

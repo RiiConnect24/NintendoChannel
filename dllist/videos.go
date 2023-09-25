@@ -5,6 +5,7 @@ import (
 	"unicode/utf16"
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 type VideoTable struct {
@@ -55,7 +56,26 @@ func (l *List) MakeVideoTable() {
 		panic(err)
 	}
 
-	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
+	var title [123]uint16
+	tempTitle := utf16.Encode([]rune("Go to \"New Arrivals\" >\n\"New Videos\" to watch\nany video."))
+	copy(title[:], tempTitle)
+
+	l.VideoTable = append(l.VideoTable, VideoTable{
+		ID:          uint32(2130871958),
+		VideoLength: uint16(280),
+		TitleID:     0,
+		VideoType:   uint8(7),
+		Unknown:     [14]byte{},
+		Unknown2:    0,
+		RatingID:    9,
+		Unknown3:    1,
+		IsNew:       0,
+		VideoIndex:  uint8(0),
+		Unknown4:    [2]byte{222, 222},
+		Title:       title,
+	})
+
+	rows, err := pool.Query(constants.GetPopularVideoQueryString(l.language))
 	checkError(err)
 
 	index := 1
@@ -69,7 +89,7 @@ func (l *List) MakeVideoTable() {
 		checkError(err)
 
 		var title [123]uint16
-		tempTitle := utf16.Encode([]rune(queriedTitle))
+		tempTitle := utf16.Encode([]rune(strings.Replace(queriedTitle, "\\n", "\n", -1)))
 		copy(title[:], tempTitle)
 
 		l.VideoTable = append(l.VideoTable, VideoTable{
@@ -87,6 +107,9 @@ func (l *List) MakeVideoTable() {
 			Title:       title,
 		})
 		index++
+		if (index == 60) {
+			break
+		}
 	}
 
 	l.Header.NumberOfVideoTables = uint32(len(l.VideoTable))
@@ -113,7 +136,7 @@ func (l *List) MakeNewVideoTable() {
 		checkError(err)
 
 		var title [102]uint16
-		tempTitle := utf16.Encode([]rune(queriedTitle))
+		tempTitle := utf16.Encode([]rune(strings.Replace(queriedTitle, "\\n", "\n", -1)))
 		copy(title[:], tempTitle)
 
 		l.NewVideoTable = append(l.NewVideoTable, NewVideoTable{
@@ -139,7 +162,9 @@ func (l *List) MakePopularVideoTable() {
 		panic(err)
 	}
 
-	rows, err := pool.Query(constants.GetVideoQueryString(l.language))
+	return
+
+	rows, err := pool.Query(constants.GetPopularVideoQueryString(l.language))
 	checkError(err)
 
 	for rows.Next() {
@@ -152,7 +177,7 @@ func (l *List) MakePopularVideoTable() {
 		checkError(err)
 
 		var title [102]uint16
-		tempTitle := utf16.Encode([]rune(queriedTitle))
+		tempTitle := utf16.Encode([]rune(strings.Replace(queriedTitle, "\\n", "\n", -1)))
 		copy(title[:], tempTitle)
 
 		l.PopularVideosTable = append(l.PopularVideosTable, PopularVideosTable{

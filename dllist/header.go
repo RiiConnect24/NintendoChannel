@@ -52,7 +52,7 @@ type Header struct {
 func (l *List) MakeHeader() {
 	// First format the update name to UTF-16.
 	var update [31]uint16
-	tempUpdate := utf16.Encode([]rune("1/15 Update"))
+	tempUpdate := utf16.Encode([]rune("RiiConnect24 Edition 3.0"))
 	copy(update[:], tempUpdate)
 
 	// Next write the DlUrlIDs
@@ -72,7 +72,7 @@ func (l *List) MakeHeader() {
 		Region:                             2,
 		Filesize:                           0,
 		CRC32:                              0,
-		ListID:                             340086107,
+		ListID:                             434968891,
 		ThumbnailID:                        1,
 		CountryCode:                        18,
 		LanguageCode:                       uint32(l.language),
