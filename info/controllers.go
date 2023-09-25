@@ -61,6 +61,9 @@ func (i *Info) GetSupportedControllers(controllers *gametdb.Controllers) {
 		case "udraw":
 			temp = append(temp, utf16.Encode([]rune("uDraw, "))...)
 			wrotePeripheral = true
+		case "amiibo":
+			temp = append(temp, utf16.Encode([]rune("Amiibo, "))...)
+			wrotePeripheral = true
 		}
 	}
 

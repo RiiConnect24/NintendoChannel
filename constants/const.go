@@ -142,12 +142,6 @@ const (
 
 	// ThreeDSGameBoy represents GameBoy Virtual Console games on the 3DS.
 	ThreeDSGameBoy
-
-	// WiiU represents Wii U disc games.
-	WiiU
-
-	// Switch represents Switch games on cartridge.
-	Switch
 )
 
 // TitleTypeData contains the metadata for a title type
@@ -159,44 +153,25 @@ type TitleTypeData struct {
 }
 
 var TitleTypesData = []TitleTypeData{
-	{TypeID: 0, ConsoleModel: RVL, ConsoleName: "Wii", GroupID: Disc},
-	{TypeID: 1, ConsoleModel: RVL, ConsoleName: "WiiWare", GroupID: WiiWare},
+	{TypeID: 1, ConsoleModel: RVL, ConsoleName: "Wii", GroupID: Disc},
+	{TypeID: 11, ConsoleModel: RVL, ConsoleName: "WiiWare", GroupID: WiiWare},
 	{TypeID: 2, ConsoleModel: RVL, ConsoleName: "Wii Channels", GroupID: WiiChannels},
-	{TypeID: 3, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console NES", GroupID: VirtualConsole},
-	{TypeID: 4, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Super NES", GroupID: VirtualConsole},
-	{TypeID: 5, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Nintendo 64", GroupID: VirtualConsole},
-	{TypeID: 6, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console TurboGrafx16", GroupID: VirtualConsole},
-	{TypeID: 7, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Sega Genesis", GroupID: VirtualConsole},
-	{TypeID: 8, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Neo Geo", GroupID: VirtualConsole},
-	{TypeID: 9, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Master System", GroupID: VirtualConsole},
-	{TypeID: 10, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Commodore 64", GroupID: VirtualConsole},
-	{TypeID: 11, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console Arcade", GroupID: VirtualConsole},
-	{TypeID: 12, ConsoleModel: RVL, ConsoleName: "Wii Virtual Console MSX", GroupID: VirtualConsole},
-	{TypeID: 13, ConsoleModel: NTR, ConsoleName: "Nintendo DS", GroupID: DS},
-	{TypeID: 14, ConsoleModel: TWL, ConsoleName: "Nintendo DS", GroupID: DS},
-	{TypeID: 15, ConsoleModel: TWL, ConsoleName: "Nintendo DSi", GroupID: DSi},
-	{TypeID: 16, ConsoleModel: TWL, ConsoleName: "Nintendo DSiWare", GroupID: DSiWare},
-	{TypeID: 17, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS", GroupID: ThreeDS},
-	{TypeID: 18, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Download Software", GroupID: ThreeDSDownloadSoftware},
-	{TypeID: 19, ConsoleModel: CTR, ConsoleName: "New Nintendo 3DS", GroupID: ThreeDS},
-	{TypeID: 20, ConsoleModel: CTR, ConsoleName: "New Nintendo 3DS Download Software", GroupID: ThreeDSDownloadSoftware},
-	{TypeID: 21, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Virtual Console NES", GroupID: ThreeDSGameBoy},
-	{TypeID: 22, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Virtual Console Game Boy", GroupID: ThreeDSGameBoy},
-	{TypeID: 23, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Virtual Console Game Boy Color", GroupID: ThreeDSGameBoy},
-	{TypeID: 24, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Virtual Console Game Boy Advance", GroupID: ThreeDSGameBoy},
-	{TypeID: 25, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Virtual Console Game Gear", GroupID: ThreeDSGameBoy},
-	{TypeID: 26, ConsoleModel: RVL, ConsoleName: "Wii U", GroupID: WiiU},
-	{TypeID: 27, ConsoleModel: RVL, ConsoleName: "Wii U Download Software", GroupID: WiiU},
-	{TypeID: 28, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console NES", GroupID: WiiU},
-	{TypeID: 29, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console Super NES", GroupID: WiiU},
-	{TypeID: 30, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console Nintendo 64", GroupID: WiiU},
-	{TypeID: 31, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console Game Boy Advance", GroupID: WiiU},
-	{TypeID: 32, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console Nintendo DS", GroupID: WiiU},
-	{TypeID: 33, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console TurboGrafx16", GroupID: WiiU},
-	{TypeID: 34, ConsoleModel: RVL, ConsoleName: "Wii U Virtual Console MSX", GroupID: WiiU},
-	{TypeID: 35, ConsoleModel: RVL, ConsoleName: "Wii U Applications", GroupID: WiiU},
-	{TypeID: 36, ConsoleModel: NTR, ConsoleName: "Nintendo Switch", GroupID: Switch},
-	/*{TypeID: 37, ConsoleModel: NTR, ConsoleName: "Nintendo Switch Download Software", GroupID: Switch},*/
+	{TypeID: 3, ConsoleModel: RVL, ConsoleName: "NES", GroupID: VirtualConsole},
+	{TypeID: 4, ConsoleModel: RVL, ConsoleName: "Super NES", GroupID: VirtualConsole},
+	{TypeID: 5, ConsoleModel: RVL, ConsoleName: "Nintendo 64", GroupID: VirtualConsole},
+	{TypeID: 6, ConsoleModel: RVL, ConsoleName: "TurboGrafx16", GroupID: VirtualConsole},
+	{TypeID: 7, ConsoleModel: RVL, ConsoleName: "Sega Genesis", GroupID: VirtualConsole},
+	{TypeID: 8, ConsoleModel: RVL, ConsoleName: "NEOGEO", GroupID: VirtualConsole},
+	{TypeID: 12, ConsoleModel: RVL, ConsoleName: "MASTER SYSTEM", GroupID: VirtualConsole},
+	{TypeID: 13, ConsoleModel: RVL, ConsoleName: "Commodore 64", GroupID: VirtualConsole},
+	{TypeID: 14, ConsoleModel: RVL, ConsoleName: "Virtual Console Arcade", GroupID: VirtualConsole},
+	{TypeID: 10, ConsoleModel: NTR, ConsoleName: "Nintendo DS", GroupID: DS},
+	{TypeID: 15, ConsoleModel: TWL, ConsoleName: "Nintendo DS", GroupID: DS},
+	{TypeID: 16, ConsoleModel: TWL, ConsoleName: "Nintendo DSi", GroupID: DSi},
+	{TypeID: 17, ConsoleModel: TWL, ConsoleName: "Nintendo DSiWare", GroupID: DSiWare},
+	{TypeID: 18, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS", GroupID: ThreeDS},
+	{TypeID: 19, ConsoleModel: CTR, ConsoleName: "Nintendo 3DS Download Software", GroupID: ThreeDSDownloadSoftware},
+	{TypeID: 20, ConsoleModel: CTR, ConsoleName: "GAME BOY", GroupID: ThreeDSGameBoy},
 }
 
 // TitleType is the classified type of title according to GameTDB
@@ -212,33 +187,15 @@ const (
 	TurboGrafx16
 	Genesis
 	NeoGeo
-	NintendoDS           TitleType = 13
-	_WiiWare             TitleType = 1
-	MasterSystem         TitleType = 9
-	Commodore64          TitleType = 10
-	VirtualConsoleArcade TitleType = 11
-	NintendoDSi          TitleType = 15
-	NintendoDSiWare      TitleType = 16
-	NintendoThreeDS      TitleType = 17
-	ThreeDSDownload      TitleType = 18
-	NewThreeDS				TitleType = 19
-	NewThreeDSDownload		TitleType = 20
-	ThreeDSNES			TitleType = 21
-	ThreeDSGameBoyColor	TitleType = 23
-	ThreeDSGameBoyAdvance	TitleType = 24
-	ThreeDSGameGead			TitleType = 25
-	WiiUDisc				TitleType = 26
-	WiiUDownload		  TitleType = 27
-	WiiUNES					TitleType = 28
-	WiiUSNES				TitleType = 29
-	WiiUN64					TitleType = 30
-	WiiUGBA					TitleType = 31
-	WiiUDS					TitleType = 32
-	WiiUTurboGrafx16		TitleType = 33
-	WiiUMSX					TitleType = 34
-	WiiUApplications		TitleType = 35
-	SwitchPhysical			TitleType = 36
-	/*SwitchDownload			TitleType = 37*/
+	NintendoDS           TitleType = 10
+	_WiiWare             TitleType = 11
+	MasterSystem         TitleType = 12
+	Commodore64          TitleType = 13
+	VirtualConsoleArcade TitleType = 14
+	NintendoDSi          TitleType = 16
+	NintendoDSiWare      TitleType = 17
+	NintendoThreeDS      TitleType = 18
+	ThreeDSDownload      TitleType = 19
 )
 
 var TitleTypeMap = map[string]TitleType{
@@ -263,9 +220,6 @@ var TitleTypeMap = map[string]TitleType{
 	"VC-GBC":    ThreeDSDownload,
 	"VC-GBA":    ThreeDSDownload,
 	"VC-GG":     ThreeDSDownload,
-	"WiiU":			WiiUDisc,
-	"eShop":		WiiUDownload,
-	"Switch":		SwitchPhysical,
 }
 
 type Medal uint8

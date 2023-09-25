@@ -75,7 +75,22 @@ func MakeDownloadList() {
 			go func(_region constants.RegionMeta, _language constants.Language) {
 				defer wg.Done()
 				semaphore <- struct{}{}
-				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
+				
+				var reg [3]string
+				reg[0] = "JP"
+				reg[1] = "GB"
+				reg[2] = "US"
+
+				var lang [7]string
+				lang[0] = "ja"
+				lang[1] = "en"
+				lang[2] = "de"
+				lang[3] = "fr"
+				lang[4] = "es"
+				lang[5] = "it"
+				lang[6] = "nl"
+
+				fmt.Printf("Starting worker - Region: %s, Language: %s\n", reg[_region.Region], lang[_language])
 				list := List{
 					region:          _region.Region,
 					ratingGroup:     _region.RatingGroup,
@@ -118,9 +133,11 @@ func MakeDownloadList() {
 				compressed, err := lz10.Compress(temp.Bytes())
 				checkError(err)
 
-				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
-				checkError(err)
-				fmt.Printf("Finished worker - Region: %d, Language: %d\n", _region.Region, _language)
+				err = os.MkdirAll(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/soft/%s/%s/", reg[_region.Region], lang[_language]), os.ModePerm)
+
+				err = os.WriteFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/list/%s/%s/434968891.LZ", reg[_region.Region], lang[_language]), compressed, os.ModePerm)
+
+				fmt.Printf("Finished worker - Region: %s, Language: %s\n", reg[_region.Region], lang[_language])
 				<-semaphore
 			}(region, language)
 		}

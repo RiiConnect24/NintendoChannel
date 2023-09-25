@@ -55,6 +55,7 @@ type Date struct {
 type Rating struct {
 	Type  string `xml:"type,attr"`
 	Value string `xml:"value,attr"`
+	Descriptor []string `xml:"descriptor"`
 }
 
 type Controllers struct {
@@ -74,7 +75,7 @@ var (
 	DSTDB      *GameTDB
 	ThreeDSTDB *GameTDB
 
-	tdbNames = []string{"wiitdb", "dstdb", "3dstdb"}
+	tdbNames = []string{"wiitdb"}
 )
 
 func checkError(err error) {

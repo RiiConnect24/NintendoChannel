@@ -43,8 +43,8 @@ type Info struct {
 
 var timePlayed = map[string]TimePlayed{}
 
-func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType) {
-	if !strings.Contains(title, "Animal Crossing") {
+func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, ratingDescriptors [7]string) {
+	if !strings.Contains(title, "MadWorld") {
 		return
 	}
 
@@ -139,6 +139,7 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 
 	i.Header.PictureOffset = i.GetCurrentSize(imageBuffer)
 	i.WriteCoverArt(imageBuffer, titleType, region, game.ID)
+	i.WriteDetailedRatingImage(imageBuffer, region, ratingDescriptors, fileID)
 	i.WriteRatingImage(imageBuffer, region)
 	i.Header.Filesize = i.GetCurrentSize(imageBuffer)
 	temp.Reset()
@@ -195,9 +196,15 @@ func capitalizeString(input string) string {
 
 	for _, word := range words {
 		if len(word) > 0 {
-			// Capitalize the first letter of the word
-			capitalizedWord := string(unicode.ToUpper(rune(word[0]))) + strings.ToLower(word[1:])
-			capitalizedWords = append(capitalizedWords, capitalizedWord)
+			// Check if the word is "and" or "of"
+			if word == "of" || word == "and" {
+				// Add the word as is (not capitalized)
+				capitalizedWords = append(capitalizedWords, word)
+			} else {
+				// Capitalize the first letter of the word
+				capitalizedWord := string(unicode.ToUpper(rune(word[0]))) + strings.ToLower(word[1:])
+				capitalizedWords = append(capitalizedWords, capitalizedWord)
+			}
 		}
 	}
 

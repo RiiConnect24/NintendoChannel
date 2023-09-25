@@ -124,9 +124,13 @@ func (l *List) MakeTitleTable() {
 	// Wii
 	l.GenerateTitleStruct(&gametdb.WiiTDB.Games, constants.Wii)
 	// DS
-	l.GenerateTitleStruct(&gametdb.DSTDB.Games, constants.NintendoDS)
+	/*l.GenerateTitleStruct(&gametdb.DSTDB.Games, constants.NintendoDS)
 	// 3DS
-	l.GenerateTitleStruct(&gametdb.ThreeDSTDB.Games, constants.NintendoThreeDS)
+	l.GenerateTitleStruct(&gametdb.ThreeDSTDB.Games, constants.NintendoThreeDS)*/
+	// Wii U
+	/*l.GenerateTitleStruct(&gametdb.WiiUTDB.Games, constants.WiiU)*/
+	// Switch
+	/*l.GenerateTitleStruct(&gametdb.SwitchTDB.Games, constants.Switch)*/
 
 	l.Header.NumberOfTitleTables = uint32(len(l.TitleTable))
 }
@@ -264,11 +268,14 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 				continue
 			}
 
+			var descriptorArray [7]string
+			copy(descriptorArray[:], game.Rating.Descriptor)
+
 			// Write all our static data first
 			i := info.Info{}
 			i.MakeHeader(titleID, game.Controllers.Players, companyID, table.TitleType, table.ReleaseYear, table.ReleaseMonth, table.ReleaseDay)
 			i.RatingID = table.RatingID
-			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType)
+			i.MakeInfo(id, &game, fullTitle, synopsis, l.region, l.language, defaultTitleType, descriptorArray)
 		}
 	}
 }
