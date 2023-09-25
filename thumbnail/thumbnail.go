@@ -83,7 +83,7 @@ func WriteThumbnail() {
 	deadBeef := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 
 	for _, image := range images {
-		file, err := os.ReadFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/movie/US/en/%d.img", image))
+		file, err := os.ReadFile(fmt.Sprintf("./movie/US/en/%d.img", image))
 		checkError(err)
 
 		table := ImageTable{
@@ -105,7 +105,7 @@ func WriteThumbnail() {
 
 	// Write twice because yes
 	for _, image := range images {
-		file, err := os.ReadFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/movie/US/en/%d.img", image))
+		file, err := os.ReadFile(fmt.Sprintf("./movie/US/en/%d.img", image))
 		checkError(err)
 
 		table := ImageTable{
@@ -128,6 +128,6 @@ func WriteThumbnail() {
 	buffer.Write(imageBuffer.Bytes())
 	binary.BigEndian.PutUint32(buffer.Bytes()[4:8], uint32(buffer.Len()))
 
-	err = os.WriteFile("434968891-001.thumb", buffer.Bytes(), 0666)
+	err = os.WriteFile("thumbnail.bin", buffer.Bytes(), 0666)
 	checkError(err)
 }

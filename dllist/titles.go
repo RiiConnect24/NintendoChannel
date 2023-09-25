@@ -226,7 +226,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 			copy(byteSubtitle[:], tempSubtitle)
 
 			medal := constants.None
-			if num, ok := l.recommendations[game.ID[:4]]; ok {
+			if num, ok := l.recommendations[game.ID[:3]]; ok {
 				medal = GetMedal(num)
 			}
 

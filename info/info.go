@@ -164,10 +164,11 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	lang[5] = "it"
 	lang[6] = "nl"
 
-	err := os.MkdirAll(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/soft/%s/%s/", reg[region], lang[language]), os.ModePerm)
-
 	i.WriteAll(temp, imageBuffer)
-	err = os.WriteFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/soft/%s/%s/%d.info", reg[region], lang[language], fileID), temp.Bytes(), 0666)
+	
+	err := os.MkdirAll(fmt.Sprintf("./infos/%d/%d/", region, language), 0755)
+	checkError(err)
+	err = os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, fileID), temp.Bytes(), 0666)
 	checkError(err)
 }
 

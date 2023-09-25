@@ -132,11 +132,11 @@ func MakeDownloadList() {
 				// Compress then write
 				compressed, err := lz10.Compress(temp.Bytes())
 				checkError(err)
-
-				err = os.MkdirAll(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/soft/%s/%s/", reg[_region.Region], lang[_language]), os.ModePerm)
-
-				err = os.WriteFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/list/%s/%s/434968891.LZ", reg[_region.Region], lang[_language]), compressed, os.ModePerm)
-
+				
+				err = os.MkdirAll(fmt.Sprintf("lists/%d/%d/", _region.Region, _language), 0755)
+				checkError(err)
+				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
+				checkError(err)
 				fmt.Printf("Finished worker - Region: %s, Language: %s\n", reg[_region.Region], lang[_language])
 				<-semaphore
 			}(region, language)

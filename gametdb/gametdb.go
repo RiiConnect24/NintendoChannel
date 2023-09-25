@@ -75,7 +75,7 @@ var (
 	DSTDB      *GameTDB
 	ThreeDSTDB *GameTDB
 
-	tdbNames = []string{"wiitdb"}
+	tdbNames = []string{"wiitdb", "dstdb", "3dstdb"}
 )
 
 func checkError(err error) {
