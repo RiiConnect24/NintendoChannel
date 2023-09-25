@@ -148,16 +148,9 @@ func MakeDownloadList() {
 	gametdb.PrepareGameTDB()
 	info.GetTimePlayed(ctx, pool)
 
-	wg := sync.WaitGroup{}
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	semaphore := make(chan struct{}, 3)
-
-	wg.Add(10)
 	for _, region := range constants.Regions {
 		for _, language := range region.Languages {
 			go func(_region constants.RegionMeta, _language constants.Language) {
-				defer wg.Done()
-				semaphore <- struct{}{}
 				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
 				list := List{
 					region:          _region.Region,
@@ -204,12 +197,9 @@ func MakeDownloadList() {
 				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
 				checkError(err)
 				fmt.Printf("Finished worker - Region: %d, Language: %d\n", _region.Region, _language)
-				<-semaphore
 			}(region, language)
 		}
 	}
-
-	wg.Wait()
 }
 
 // Write writes the current values in Votes to an io.Writer method.
