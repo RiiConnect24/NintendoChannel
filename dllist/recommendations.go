@@ -13,7 +13,7 @@ type RecentRecommendationTable struct {
 const QueryRecommendations = `SELECT COUNT(game_id), game_id FROM recommendations GROUP BY game_id`
 
 func (l *List) QueryRecommendations() {
-	rows, err := pool.Query(ctx, QueryRecommendations)
+	rows, err := pool.Query(QueryRecommendations)
 	checkError(err)
 
 	defer rows.Close()

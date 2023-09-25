@@ -4,18 +4,21 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/info"
+	"database/sql"
 	"bytes"
-	"context"
 	"encoding/binary"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/wii-tools/lzx/lz10"
 	"hash/crc32"
 	"io"
 	"log"
 	"os"
+<<<<<<< HEAD
 	"runtime"
 	"sync"
+=======
+	_ "github.com/go-sql-driver/mysql"
+>>>>>>> 7e92459 (Convert queries of Postgresql to MySQL)
 )
 
 type List struct {
@@ -49,21 +52,19 @@ func checkError(err error) {
 	}
 }
 
-var pool *pgxpool.Pool
-var ctx = context.Background()
+var pool *sql.DB
 
 func MakeDownloadList() {
 	// Initialize database
-	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
-	dbConf, err := pgxpool.ParseConfig(dbString)
-	checkError(err)
-	pool, err = pgxpool.ConnectConfig(ctx, dbConf)
-	checkError(err)
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	if err != nil {
+		panic(err)
+	}
 
 	// Ensure this Postgresql connection is valid.
 	defer pool.Close()
 	gametdb.PrepareGameTDB()
-	info.GetTimePlayed(&ctx, pool)
+	info.GetTimePlayed(pool)
 
 	wg := sync.WaitGroup{}
 	runtime.GOMAXPROCS(runtime.NumCPU())
