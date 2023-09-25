@@ -124,13 +124,9 @@ func (l *List) MakeTitleTable() {
 	// Wii
 	l.GenerateTitleStruct(&gametdb.WiiTDB.Games, constants.Wii)
 	// DS
-	/*l.GenerateTitleStruct(&gametdb.DSTDB.Games, constants.NintendoDS)
+	l.GenerateTitleStruct(&gametdb.DSTDB.Games, constants.NintendoDS)
 	// 3DS
-	l.GenerateTitleStruct(&gametdb.ThreeDSTDB.Games, constants.NintendoThreeDS)*/
-	// Wii U
-	/*l.GenerateTitleStruct(&gametdb.WiiUTDB.Games, constants.WiiU)*/
-	// Switch
-	/*l.GenerateTitleStruct(&gametdb.SwitchTDB.Games, constants.Switch)*/
+	l.GenerateTitleStruct(&gametdb.ThreeDSTDB.Games, constants.NintendoThreeDS)
 
 	l.Header.NumberOfTitleTables = uint32(len(l.TitleTable))
 }
@@ -375,13 +371,13 @@ func (l *List) MakeNewTitleTable() {
 }
 
 func GetMedal(numberOfTimesVotes int) constants.Medal {
-	if numberOfTimesVotes >= 17 {
+	if numberOfTimesVotes >= 50 {
 		return constants.Platinum
-	} else if numberOfTimesVotes >= 12 {
+	} else if numberOfTimesVotes >= 35 {
 		return constants.Gold
-	} else if numberOfTimesVotes >= 7 {
+	} else if numberOfTimesVotes >= 20 {
 		return constants.Silver
-	} else if numberOfTimesVotes >= 5 {
+	} else if numberOfTimesVotes >= 15 {
 		return constants.Bronze
 	}
 

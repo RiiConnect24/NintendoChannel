@@ -143,7 +143,7 @@ func (l *List) MakeNewVideoTable() {
 			ID:          uint32(id),
 			VideoLength: uint16(length),
 			TitleID:     0,
-			Unknown:     [15]byte{},
+			Unknown:     [15]byte{8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			Unknown2:    0,
 			RatingID:    9,
 			Unknown3:    1,
