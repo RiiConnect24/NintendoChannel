@@ -4,17 +4,18 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/info"
-	"database/sql"
 	"bytes"
 	"context"
 	"encoding/binary"
 	"fmt"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/wii-tools/lzx/lz10"
 	"hash/crc32"
 	"io"
 	"log"
 	"os"
-	_ "github.com/go-sql-driver/mysql"
+	"runtime"
+	"sync"
 )
 
 type List struct {
@@ -48,109 +49,32 @@ func checkError(err error) {
 	}
 }
 
-var pool *sql.DB
+var pool *pgxpool.Pool
 var ctx = context.Background()
-
-type WorkerCtx struct {
-	region   constants.RegionMeta
-	language constants.Language
-}
-
-func Worker(worker <-chan WorkerCtx, b chan<- int) {
-	for w := range worker {
-		var reg [3]string
-		reg[0] = "JP"
-		reg[1] = "GB"
-		reg[2] = "US"
-
-		var lang [7]string
-		lang[0] = "ja"
-		lang[1] = "en"
-		lang[2] = "de"
-		lang[3] = "fr"
-		lang[4] = "es"
-		lang[5] = "it"
-		lang[6] = "nl"
-
-		fmt.Printf("Starting worker - Region: %s, Language: %s\n", reg[w.region.Region], lang[w.language])
-		list := List{
-			region:          w.region.Region,
-			ratingGroup:     w.region.RatingGroup,
-			language:        w.language,
-			imageBuffer:     new(bytes.Buffer),
-			recommendations: map[string]int{},
-		}
-
-		list.QueryRecommendations()
-
-		list.MakeHeader()
-		list.MakeRatingsTable()
-		list.MakeTitleTypeTable()
-		list.MakeCompaniesTable()
-		list.MakeTitleTable()
-		list.MakeNewTitleTable()
-		list.MakeVideoTable()
-		list.MakeNewVideoTable()
-		list.MakeDemoTable()
-		list.MakeRecommendationTable()
-		list.MakeRecentRecommendationTable()
-		list.MakePopularVideoTable()
-		list.MakeDetailedRatingTable()
-		list.WriteRatingImages()
-
-		temp := bytes.NewBuffer(nil)
-		list.WriteAll(temp)
-		list.Header.Filesize = uint32(temp.Len())
-		temp.Reset()
-		list.WriteAll(temp)
-
-		crcTable := crc32.MakeTable(crc32.IEEE)
-		checksum := crc32.Checksum(temp.Bytes(), crcTable)
-		list.Header.CRC32 = checksum
-
-		temp.Reset()
-		list.WriteAll(temp)
-
-		// Compress then write
-		compressed, err := lz10.Compress(temp.Bytes())
-		checkError(err)
-
-		err = os.MkdirAll(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/list/%s/%s/", reg[w.region.Region], lang[w.language]), os.ModePerm)
-
-		err = os.WriteFile(fmt.Sprintf("./dir/f/248/49125/1h/entus.wapp.wii.com/6/VHFQ3VjDqKlZDIWAyCY0S38zIoGAoTEqvJjr8OVua0G8UwHqixKklOBAHVw9UaZmTHqOxqSaiDd5bjhSQS6hk6nkYJVdioanD5Lc8mOHkobUkblWf8KxczDUZwY84FIV/list/%s/%s/434968891.LZ", reg[w.region.Region], lang[w.language]), compressed, os.ModePerm)
-		checkError(err)
-		fmt.Printf("Finished worker - Region: %s, Language: %s\n", reg[w.region.Region], lang[w.language])
-		b <- 1
-	}
-}
-
-func SpawnWorker(number int, contexts chan WorkerCtx, results chan int) {
-	for i := 0; i < number; i++ {
-		go Worker(contexts, results)
-	}
-}
-
-func ResolveWorkers(number int, contexts chan WorkerCtx, results chan int) {
-	for i := 0; i < number; i++ {
-		<-results
-		SpawnWorker(1, contexts, results)
-	}
-}
 
 func MakeDownloadList() {
 	// Initialize database
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
-	if err != nil {
-		panic(err)
-	}
+	dbString := fmt.Sprintf("postgres://%s:%s@%s/%s", "noahpistilli", "2006", "127.0.0.1", "nc")
+	dbConf, err := pgxpool.ParseConfig(dbString)
+	checkError(err)
+	pool, err = pgxpool.ConnectConfig(ctx, dbConf)
+	checkError(err)
 
 	// Ensure this Postgresql connection is valid.
+	defer pool.Close()
 	gametdb.PrepareGameTDB()
-	info.GetTimePlayed(ctx, pool)
+	info.GetTimePlayed(&ctx, pool)
 
+	wg := sync.WaitGroup{}
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	semaphore := make(chan struct{}, 3)
+
+	wg.Add(10)
 	for _, region := range constants.Regions {
 		for _, language := range region.Languages {
 			go func(_region constants.RegionMeta, _language constants.Language) {
+				defer wg.Done()
+				semaphore <- struct{}{}
 				fmt.Printf("Starting worker - Region: %d, Language: %d\n", _region.Region, _language)
 				list := List{
 					region:          _region.Region,
@@ -197,9 +121,12 @@ func MakeDownloadList() {
 				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)
 				checkError(err)
 				fmt.Printf("Finished worker - Region: %d, Language: %d\n", _region.Region, _language)
+				<-semaphore
 			}(region, language)
 		}
 	}
+
+	wg.Wait()
 }
 
 // Write writes the current values in Votes to an io.Writer method.
