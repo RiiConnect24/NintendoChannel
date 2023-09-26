@@ -74,7 +74,7 @@ func (l *List) MakeDetailedRatingTable() {
 func (l *List) WriteRatingImages() {
 	deadBeef := []byte{0xDE, 0xAD, 0xBE, 0xEF}
 
-	for i, _ := range l.RatingsTable {
+	for i := range l.RatingsTable {
 		l.RatingsTable[i].JPEGOffset = l.GetCurrentSize()
 		l.RatingsTable[i].JPEGSize = uint32(len(constants.Images[l.ratingGroup][i]))
 		l.imageBuffer.Write(constants.Images[l.ratingGroup][i])

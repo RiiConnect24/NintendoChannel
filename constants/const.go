@@ -254,7 +254,6 @@ func GetPopularVideoQueryString(language Language) string {
 	}
 }
 
-
 func GetVideoQueryString(language Language) string {
 	switch language {
 	case Japanese:

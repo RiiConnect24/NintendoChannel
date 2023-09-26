@@ -4,20 +4,20 @@ import (
 	"NintendoChannel/constants"
 	"NintendoChannel/gametdb"
 	"NintendoChannel/info"
-	"database/sql"
+	"bufio"
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/binary"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/wii-tools/lzx/lz10"
 	"hash/crc32"
 	"io"
 	"log"
 	"os"
-	_ "github.com/go-sql-driver/mysql"
 	"runtime"
 	"sync"
-	"bufio"
 )
 
 type List struct {
@@ -56,20 +56,20 @@ var ctx = context.Background()
 
 func MakeDownloadList(overwrite bool) {
 	file, err := os.Open("sql.txt")
-    if err != nil {
-        panic(err)
-    }
-    defer file.Close()
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 
-    // Read the password from the file
-    scanner := bufio.NewScanner(file)
-    scanner.Scan()
-    password := scanner.Text()
+	// Read the password from the file
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	password := scanner.Text()
 
-    // Check for errors while scanning
-    if err := scanner.Err(); err != nil {
-        panic(err)
-    }
+	// Check for errors while scanning
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
 
 	// Initialize database
 	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "nc"))
@@ -92,7 +92,7 @@ func MakeDownloadList(overwrite bool) {
 			go func(_region constants.RegionMeta, _language constants.Language) {
 				defer wg.Done()
 				semaphore <- struct{}{}
-				
+
 				var reg [3]string
 				reg[0] = "JP"
 				reg[1] = "GB"
@@ -149,7 +149,7 @@ func MakeDownloadList(overwrite bool) {
 				// Compress then write
 				compressed, err := lz10.Compress(temp.Bytes())
 				checkError(err)
-				
+
 				err = os.MkdirAll(fmt.Sprintf("lists/%d/%d/", _region.Region, _language), 0755)
 				checkError(err)
 				err = os.WriteFile(fmt.Sprintf("lists/%d/%d/dllist.bin", _region.Region, _language), compressed, 0666)

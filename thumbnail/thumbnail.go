@@ -2,15 +2,15 @@ package thumbnail
 
 import (
 	"NintendoChannel/constants"
-	"database/sql"
+	"bufio"
 	"bytes"
+	"database/sql"
 	_ "embed"
 	"encoding/binary"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
-	"bufio"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 type Thumbnail struct {
@@ -41,20 +41,20 @@ func checkError(err error) {
 
 func WriteThumbnail() {
 	file, err := os.Open("sql.txt")
-    if err != nil {
-        panic(err)
-    }
-    defer file.Close()
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 
-    // Read the password from the file
-    scanner := bufio.NewScanner(file)
-    scanner.Scan()
-    password := scanner.Text()
+	// Read the password from the file
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	password := scanner.Text()
 
-    // Check for errors while scanning
-    if err := scanner.Err(); err != nil {
-        panic(err)
-    }
+	// Check for errors while scanning
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
 
 	// Initialize database
 	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "nc"))
@@ -73,7 +73,7 @@ func WriteThumbnail() {
 		var queriedTitle string
 		var length int
 		var videoType int
-		
+
 		err = rows.Scan(&id, &queriedTitle, &length, &videoType)
 		checkError(err)
 

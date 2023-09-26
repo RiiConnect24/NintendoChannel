@@ -50,7 +50,7 @@ var (
 
 	//go:embed ratings/cero/Z.jpg
 	CEROZ []byte
-	
+
 	//go:embed ratings/esrb/EC-small.jpg
 	ECImageSmall []byte
 

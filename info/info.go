@@ -5,16 +5,16 @@ import (
 	"NintendoChannel/gametdb"
 	"bytes"
 	"context"
-	"encoding/binary"
 	"database/sql"
+	"encoding/binary"
 	"fmt"
 	"github.com/mitchellh/go-wordwrap"
 	"hash/crc32"
 	"log"
 	"os"
 	"strings"
-	"unicode/utf16"
 	"unicode"
+	"unicode/utf16"
 )
 
 type Info struct {
@@ -161,7 +161,7 @@ func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis strin
 	lang[6] = "nl"
 
 	i.WriteAll(temp, imageBuffer)
-	
+
 	err := os.MkdirAll(fmt.Sprintf("./infos/%d/%d/", region, language), 0755)
 	checkError(err)
 	err = os.WriteFile(fmt.Sprintf("./infos/%d/%d/%d.info", region, language, fileID), temp.Bytes(), 0666)
@@ -227,5 +227,5 @@ func GetTimePlayed(ctx context.Context, pool *sql.DB) {
 			TotalTimesPlayed:          uint32(totalTimesPlayed),
 			TimesPlayedPerPerson:      uint32((float64(totalTimesPlayed / numberOfPlayers)) / 0.01),
 		}
-	} 
+	}
 }

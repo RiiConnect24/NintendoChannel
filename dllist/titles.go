@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"github.com/mitchellh/go-wordwrap"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"unicode/utf16"
-	"sort"
 )
 
 // CompanyTable represents a company in the dllist.bin
@@ -132,11 +132,11 @@ func (l *List) MakeTitleTable(overwrite bool) {
 }
 
 func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType constants.TitleType, overwrite bool) {
-    customSort := func(i, j int) bool {
-        return (*games)[i].Locale[0].Title < (*games)[j].Locale[0].Title
-    }
+	customSort := func(i, j int) bool {
+		return (*games)[i].Locale[0].Title < (*games)[j].Locale[0].Title
+	}
 
-    sort.Slice(*games, customSort)
+	sort.Slice(*games, customSort)
 
 	for _, game := range *games {
 		if game.Region == regionToGameTDB[l.region] || game.Region == "ALL" {
