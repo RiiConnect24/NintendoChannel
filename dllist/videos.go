@@ -5,6 +5,7 @@ import (
 	"unicode/utf16"
 	"database/sql"
 	"fmt"
+	"os"
 	"strings"
 	"bufio"
 )

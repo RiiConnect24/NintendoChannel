@@ -3,6 +3,7 @@ package dllist
 import (
 	"NintendoChannel/constants"
 	"database/sql"
+	"os"
 	"fmt"
 	"bufio"
 )
