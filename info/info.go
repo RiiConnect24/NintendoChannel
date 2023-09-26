@@ -44,10 +44,6 @@ type Info struct {
 var timePlayed = map[string]TimePlayed{}
 
 func (i *Info) MakeInfo(fileID uint32, game *gametdb.Game, title, synopsis string, region constants.Region, language constants.Language, titleType constants.TitleType, ratingDescriptors [7]string) {
-	if !strings.Contains(title, "MadWorld") {
-		return
-	}
-
 	// Make other fields
 	i.GetSupportedControllers(&game.Controllers)
 	i.GetSupportedFeatures(&game.Features)

@@ -118,20 +118,20 @@ var gameTDBRatingToRatingID = map[string]map[string]uint8{
 	},
 }
 
-func (l *List) MakeTitleTable() {
+func (l *List) MakeTitleTable(overwrite bool) {
 	l.Header.TitleTableOffset = l.GetCurrentSize()
 
 	// Wii
-	l.GenerateTitleStruct(&gametdb.WiiTDB.Games, constants.Wii)
+	l.GenerateTitleStruct(&gametdb.WiiTDB.Games, constants.Wii, overwrite)
 	// DS
-	l.GenerateTitleStruct(&gametdb.DSTDB.Games, constants.NintendoDS)
+	l.GenerateTitleStruct(&gametdb.DSTDB.Games, constants.NintendoDS, overwrite)
 	// 3DS
-	l.GenerateTitleStruct(&gametdb.ThreeDSTDB.Games, constants.NintendoThreeDS)
+	l.GenerateTitleStruct(&gametdb.ThreeDSTDB.Games, constants.NintendoThreeDS, overwrite)
 
 	l.Header.NumberOfTitleTables = uint32(len(l.TitleTable))
 }
 
-func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType constants.TitleType) {
+func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType constants.TitleType, overwrite bool) {
     customSort := func(i, j int) bool {
         return (*games)[i].Locale[0].Title < (*games)[j].Locale[0].Title
     }
@@ -259,7 +259,7 @@ func (l *List) GenerateTitleStruct(games *[]gametdb.Game, defaultTitleType const
 
 			l.TitleTable = append(l.TitleTable, table)
 
-			if _, err := os.Stat(fmt.Sprintf("./infos/%d/%d/%d.info", l.region, l.language, binary.BigEndian.Uint32(titleID[:]))); err == nil {
+			if _, err := os.Stat(fmt.Sprintf("./infos/%d/%d/%d.info", l.region, l.language, binary.BigEndian.Uint32(titleID[:]))); err == nil || !overwrite {
 				// The info file exists, continue on to the next
 				continue
 			}

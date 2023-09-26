@@ -53,7 +53,7 @@ func checkError(err error) {
 var pool *sql.DB
 var ctx = context.Background()
 
-func MakeDownloadList() {
+func MakeDownloadList(overwrite bool) {
 	// Initialize database
 	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
 	if err != nil {
@@ -105,7 +105,7 @@ func MakeDownloadList() {
 				list.MakeRatingsTable()
 				list.MakeTitleTypeTable()
 				list.MakeCompaniesTable()
-				list.MakeTitleTable()
+				list.MakeTitleTable(overwrite)
 				list.MakeNewTitleTable()
 				list.MakeVideoTable()
 				list.MakeNewVideoTable()
