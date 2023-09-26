@@ -69,7 +69,7 @@ func (l *List) MakeVideoTable() {
 		panic(err)
 	}
 
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "rc24_nc"))
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "rc24", password, "127.0.0.1", 3306, "rc24_nc"))
 	if err != nil {
 		panic(err)
 	}
@@ -152,7 +152,7 @@ func (l *List) MakeNewVideoTable() {
 		panic(err)
 	}
 
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "rc24_nc"))
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "rc24", password, "127.0.0.1", 3306, "rc24_nc"))
 	if err != nil {
 		panic(err)
 	}
@@ -207,7 +207,7 @@ func (l *List) MakePopularVideoTable() {
 		panic(err)
 	}
 
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "rc24_nc"))
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "rc24", password, "127.0.0.1", 3306, "rc24_nc"))
 	if err != nil {
 		panic(err)
 	}
