@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"bufio"
 )
 
 type VideoTable struct {
@@ -50,8 +51,24 @@ type PopularVideosTable struct {
 
 func (l *List) MakeVideoTable() {
 	l.Header.VideoTableOffset = l.GetCurrentSize()
+
+	file, err := os.Open("sql.txt")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    // Read the password from the file
+    scanner := bufio.NewScanner(file)
+    scanner.Scan()
+    password := scanner.Text()
+
+    // Check for errors while scanning
+    if err := scanner.Err(); err != nil {
+        panic(err)
+	}
 	
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "nc"))
 	if err != nil {
 		panic(err)
 	}
@@ -117,8 +134,24 @@ func (l *List) MakeVideoTable() {
 
 func (l *List) MakeNewVideoTable() {
 	l.Header.NewVideoTableOffset = l.GetCurrentSize()
+
+	file, err := os.Open("sql.txt")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    // Read the password from the file
+    scanner := bufio.NewScanner(file)
+    scanner.Scan()
+    password := scanner.Text()
+
+    // Check for errors while scanning
+    if err := scanner.Err(); err != nil {
+        panic(err)
+    }
 	
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "nc"))
 	if err != nil {
 		panic(err)
 	}
@@ -156,8 +189,24 @@ func (l *List) MakeNewVideoTable() {
 
 func (l *List) MakePopularVideoTable() {
 	l.Header.PopularVideoTableOffset = l.GetCurrentSize()
+
+	file, err := os.Open("sql.txt")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    // Read the password from the file
+    scanner := bufio.NewScanner(file)
+    scanner.Scan()
+    password := scanner.Text()
+
+    // Check for errors while scanning
+    if err := scanner.Err(); err != nil {
+        panic(err)
+    }
 	
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "nc"))
 	if err != nil {
 		panic(err)
 	}

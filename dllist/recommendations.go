@@ -4,6 +4,7 @@ import (
 	"NintendoChannel/constants"
 	"database/sql"
 	"fmt"
+	"bufio"
 )
 
 type RecentRecommendationTable struct {
@@ -14,8 +15,23 @@ type RecentRecommendationTable struct {
 
 const QueryRecommendations = `SELECT COUNT(game_id), game_id FROM recommendations GROUP BY game_id`
 
-func (l *List) QueryRecommendations() {
-	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", "DellServerzz", "127.0.0.1", 3306, "nc"))
+func (l *List) QueryRecommendations() {file, err := os.Open("sql.txt")
+    if err != nil {
+        panic(err)
+    }
+    defer file.Close()
+
+    // Read the password from the file
+    scanner := bufio.NewScanner(file)
+    scanner.Scan()
+    password := scanner.Text()
+
+    // Check for errors while scanning
+    if err := scanner.Err(); err != nil {
+        panic(err)
+    }
+
+	pool, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", "root", password, "127.0.0.1", 3306, "nc"))
 	if err != nil {
 		panic(err)
 	}
